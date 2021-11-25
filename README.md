@@ -9,7 +9,8 @@ This build is based on ubuntu/apache2:2.4-20.04_beta with php 7.4 and iF.SVNAdmi
 ## How to run
 
 ```shell
-docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d d clamy54/svn-if.svnadmin:tag
+docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d
+d clamy54/svn-if.svnadmin:tag
 ```
 
 If /localdir/keys is empty, self-signed ssl certificate will be generated.
@@ -41,3 +42,5 @@ To persist data, theses volumes are exposed and can be mounted to the local file
 * `/etc/apache2/keys/ ` - SSL keys & certificates
 * `/etc/apache2/dav_svn/` - Users & authorization files used by mod_dav_svn
 
+## Source repository 
+https://github.com/clamy54/docker-svn-iF.SVNAdmin
