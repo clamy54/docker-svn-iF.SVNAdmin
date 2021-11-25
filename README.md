@@ -1,8 +1,8 @@
-# iF.SVNAdmin SVN Server
+# iF.SVNAdmin SVN Server ( svnadmin )
 
 This container provides a fully fonctionnal subversion server with iF.SVNAdmin as web based GUI.
 
-This build is based on ubuntu/apache2:2.4-20.04_beta with php 7.4 and iF.SVNAdmin 1.6.2.
+This build is based on ubuntu/apache2:2.4-20.04_beta with php 7.4, mod ssl,  and iF.SVNAdmin 1.6.2 (svnadmin).
 
 *This isn't an official build and it comes with no warranty  ...*
 
