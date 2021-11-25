@@ -83,6 +83,8 @@ then
     chown www-data:www-data /etc/apache2/dav_svn/dav_svn.authz
 fi
 
+chown -R www-data:www-data /var/svn
+
 echo "Starting Apache ..."
 
 /usr/sbin/apache2ctl -D FOREGROUND
