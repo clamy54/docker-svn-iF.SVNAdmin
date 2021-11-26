@@ -42,3 +42,7 @@ To persist data, theses volumes are exposed and can be mounted to the local file
 
 ## Source repository 
 https://github.com/clamy54/docker-svn-iF.SVNAdmin
+
+## Example of how to use this container on Synology DSM :
+https://www.be-root.com/2021/11/25/synology-et-serveur-svn/
+
