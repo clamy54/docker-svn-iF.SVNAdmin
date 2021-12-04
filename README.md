@@ -7,6 +7,7 @@ This build is based on ubuntu/apache2:2.4-20.04_beta with php 7.4, mod ssl,  and
 *This isn't an official build and it comes with no warranty  ...*
 
 ## How to run
+
 ```shell
 docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d clamy54/docker-svn-svnadmin:tag
 ```
@@ -33,7 +34,14 @@ Copy your certificate to /localdir/keys/cert.pem
 Copy your private key to /localdir/keys/cert.key
 
 
+## Using your own DH parameters file
+
+At first run, if /localdir/keys/dhparams.pem doesn't exists, 2048-bits dh paramaters are generated.
+
+You can generate your own 4096 bits DH parameters and put it in your /localdir/keys/dhparams.pem to replace the self generated 2048-bits DH file. 
+
 ##  Volumes
+
 To persist data, theses volumes are exposed and can be mounted to the local filesystem by adding -v option in the command line :
 
 * `/var/svn` - Subversion repositories
@@ -41,8 +49,14 @@ To persist data, theses volumes are exposed and can be mounted to the local file
 * `/etc/apache2/dav_svn/` - Users & authorization files used by mod_dav_svn
 
 ## Source repository 
+
+Sources can be found at :
 https://github.com/clamy54/docker-svn-iF.SVNAdmin
 
 ## Example of how to use this container on Synology DSM :
+
+You can find an example (in french) demonstating how to run this container on Synology DSM 7 as a remplacement of
+Synology SVN server (deprecated since DSM 7) :
+
 https://www.be-root.com/2021/11/25/synology-et-serveur-svn/
 

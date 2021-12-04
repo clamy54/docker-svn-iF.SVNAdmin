@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ ! -e "/etc/apache2/keys/dhparams.pem" ]
+then
+    echo "Generating DH parameters ... This may take a while !"
+    openssl dhparam -out /etc/apache2/keys/dhparams.pem 2048
+fi
+
+
 if [ -e "/etc/apache2/keys/cert.pem" ] && [ -e "/etc/apache2/keys/cert.key" ] && [ -e "/etc/apache2/keys/ca.pem" ]
 then
     echo "Setting-up apache2-ssl for CA signed certificate"
@@ -16,11 +23,21 @@ then
 	SSLCertificateFile /etc/apache2/keys/cert.pem
 	SSLCertificateKeyFile /etc/apache2/keys/cert.key
 	SSLCertificateChainFile /etc/apache2/keys/ca.pem
+        SSLOpenSSLConfCmd DHParameters /etc/apache2/keys/dhparams.pem
+
+        SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
+        SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+        SSLHonorCipherOrder     off
+        SSLSessionTickets       off
 	SSLCompression Off
+
     <Directory /var/www/html>
         AllowOverride AuthConfig
     </Directory>
 </VirtualHost>
+
+SSLUseStapling On
+SSLStaplingCache "shmcb:logs/ssl_stapling(32768)"
 
 EOF
 else
@@ -43,7 +60,14 @@ else
     SSLEngine On
     SSLCertificateFile /etc/apache2/keys/cert.pem
     SSLCertificateKeyFile /etc/apache2/keys/cert.key
+    SSLOpenSSLConfCmd DHParameters /etc/apache2/keys/dhparams.pem
+
+    SSLProtocol             all -SSLv3 -TLSv1 -TLSv1.1
+    SSLCipherSuite          ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
+    SSLHonorCipherOrder     off
+    SSLSessionTickets       off
     SSLCompression Off
+
     <Directory /var/www/html>
         AllowOverride AuthConfig
     </Directory>
