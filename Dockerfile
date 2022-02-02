@@ -5,6 +5,8 @@ ENV LANG C.UTF-8
 
 RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 openssl subversion libapache2-mod-svn php7.4-ldap php7.4-xml wget
 
+RUN apt install -y python2
+
 RUN sed -i 's/^\s*ServerTokens OS/ServerTokens Prod/g' /etc/apache2/conf-available/security.conf 
 RUN sed -i 's/^\s*ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf 
 RUN sed -i 's/^\s*SSLProtocol all -SSLv3/SSLProtocol all -TLSv1.1 -TLSv1 -SSLv2 -SSLv3/g' /etc/apache2/mods-available/ssl.conf 
