@@ -47,6 +47,16 @@ To persist data, theses volumes are exposed and can be mounted to the local file
 * `/var/svn` - Subversion repositories
 * `/etc/apache2/keys/ ` - SSL keys & certificates
 * `/etc/apache2/dav_svn/` - Users & authorization files used by mod_dav_svn
+* `/var/hooks` - (Optionnal) if you use subversion hooks, then you can place them here
+
+##  Environment variables
+
+* DEFAULT_PYTHON : (Optionnal) if set to "2", then /usr/bin/python will points to /usr/bin/python2.7. By default, /usr/bin/python points to /usr/bin/python3.8
+
+Example :
+```shell
+docker container run  --name test-svnadmin  -p 8080:80 -p 8443:443 -e DEFAULT_PYTHON="2" -d clamy54/svn-svnadmin
+```
 
 ## Source repository 
 

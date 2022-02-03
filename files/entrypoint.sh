@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [ ! -z "$TZ" ]
+then
+    echo "Setting up timezone to $TZ"
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    dpkg-reconfigure -f noninteractive tzdata
+fi
+
+
 if [ ! -e "/etc/apache2/keys/dhparams.pem" ]
 then
     echo "Generating DH parameters ... This may take a while !"
@@ -108,6 +116,18 @@ then
 fi
 
 chown -R www-data:www-data /var/svn
+
+if [ -e "/usr/bin/python" ]
+then
+    rm -f /usr/bin/python
+fi
+
+if [ "$DEFAULT_PYTHON" == "2" ]
+then
+    ln -s /usr/bin/python2.7 /usr/bin/python
+else
+    ln -s /usr/bin/python3.8 /usr/bin/python
+fi
 
 echo "Starting Apache ..."
 
