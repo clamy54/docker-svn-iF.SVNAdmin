@@ -2,10 +2,11 @@ FROM ubuntu/apache2:2.4-20.04_beta
 MAINTAINER clamy54
 ENV container docker
 ENV LANG C.UTF-8
+ENV TZ="America/New_York"
 
-RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 openssl subversion libapache2-mod-svn php7.4-ldap php7.4-xml wget
+RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 openssl subversion libapache2-mod-svn php7.4-ldap php7.4-xml wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y python2
+RUN apt install -y python2 python3
 
 RUN sed -i 's/^\s*ServerTokens OS/ServerTokens Prod/g' /etc/apache2/conf-available/security.conf 
 RUN sed -i 's/^\s*ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf 
@@ -17,7 +18,7 @@ COPY files/dav_svn.conf  /etc/apache2/mods-available/dav_svn.conf
 
 RUN a2enmod auth_digest && a2enmod dav_svn && a2enmod ssl
 
-RUN mkdir -p /var/svn /etc/apache2/dav_svn /container && chown www-data:www-data /var/svn
+RUN mkdir -p /var/svn /etc/apache2/dav_svn /container /var/hooks && chown www-data:www-data /var/svn &&  chown www-data:www-data /var/hooks
 
 COPY files/entrypoint.sh /container/entrypoint.sh
 
@@ -33,7 +34,7 @@ RUN chown www-data:www-data /var/www/html/data/config.ini /var/www/html/data/use
 
 RUN sed -i 's/deny from all/Require all denied/g' /var/www/html/.htaccess && echo "Require all denied" > /var/www/html/data/.htaccess
 
-VOLUME ["/var/svn", "/etc/apache2/dav_svn", "/etc/apache2/keys"]
+VOLUME ["/var/svn", "/etc/apache2/dav_svn", "/etc/apache2/keys", "/var/hooks"]
 
 EXPOSE 80 443
 
