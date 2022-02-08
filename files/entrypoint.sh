@@ -1,5 +1,9 @@
 #!/bin/bash
 
+DATE=`date '+%T - %F'`
+
+echo "***** Container starting at $DATE *****"
+
 if [ ! -z "$TZ" ]
 then
     echo "Setting up timezone to $TZ"
@@ -7,18 +11,28 @@ then
     dpkg-reconfigure -f noninteractive tzdata
 fi
 
-
 if [ ! -e "/etc/apache2/keys/dhparams.pem" ]
 then
     echo "Generating DH parameters ... This may take a while !"
     openssl dhparam -out /etc/apache2/keys/dhparams.pem 2048
 fi
 
+SHORT=$(hostname -s)
+FQDN=$(hostname -f)
+
+echo "Setting-up apache2 ..."
+
+if [ "$SHORT" = "$FQDN" ]; then
+    echo -e "ServerName localhost \n" > /etc/apache2/sites-available/ifsvnadmin.conf
+else
+    echo -e "ServerName $FQDN \n" > /etc/apache2/sites-available/ifsvnadmin.conf
+fi
+
 
 if [ -e "/etc/apache2/keys/cert.pem" ] && [ -e "/etc/apache2/keys/cert.key" ] && [ -e "/etc/apache2/keys/ca.pem" ]
 then
     echo "Setting-up apache2-ssl for CA signed certificate"
-    cat <<EOF > /etc/apache2/sites-available/ifsvnadmin.conf
+    cat <<EOF >> /etc/apache2/sites-available/ifsvnadmin.conf
 <VirtualHost *:80>
     DocumentRoot /var/www/html/
     <Directory /var/www/html>
@@ -56,7 +70,7 @@ else
         openssl req -x509 -newkey rsa:4086 -subj "/C=NA/ST=NONE/L=NONE/O=NONE/CN=localhost" -keyout "/etc/apache2/keys/cert.key" -out  "/etc/apache2/keys/cert.pem" -days 3650 -nodes -sha256
     fi
     echo "Setting-up apache2-ssl for self-signed certificate"
-    cat <<EOF > /etc/apache2/sites-available/ifsvnadmin.conf
+    cat <<EOF >> /etc/apache2/sites-available/ifsvnadmin.conf
 <VirtualHost *:80>
     DocumentRoot /var/www/html/
     <Directory /var/www/html>
@@ -87,19 +101,19 @@ fi
 if [ -e "/etc/apache2/sites-enabled/000-default.conf" ] 
 then
     echo "Disabling default apache site"
-    a2dissite 000-default.conf
+    a2dissite 000-default.conf > /dev/null
 fi
 
 if [ -e "/etc/apache2/sites-enabled/default-ssl.conf" ] 
 then
     echo "Disabling default apache ssl site"
-    a2dissite default-ssl.conf
+    a2dissite default-ssl.conf > /dev/null
 fi
 
 if [ ! -e "/etc/apache2/sites-enabled/ifsvnadmin.conf" ] 
 then
     echo "Activating ifsvnadmin apache configuration file"
-    a2ensite ifsvnadmin.conf
+    a2ensite ifsvnadmin.conf > /dev/null
 fi
 
 if [ ! -e "/etc/apache2/dav_svn/dav_svn.passwd" ] 
@@ -122,6 +136,8 @@ then
     rm -f /usr/bin/python
 fi
 
+echo "Setting up default python interpreter"
+
 if [ "$DEFAULT_PYTHON" == "2" ]
 then
     ln -s /usr/bin/python2.7 /usr/bin/python
@@ -129,6 +145,6 @@ else
     ln -s /usr/bin/python3.8 /usr/bin/python
 fi
 
-echo "Starting Apache ..."
+echo "Starting apache2 ..."
 
 exec /usr/sbin/apache2ctl -D FOREGROUND

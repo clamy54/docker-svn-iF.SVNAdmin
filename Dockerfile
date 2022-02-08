@@ -3,8 +3,10 @@ MAINTAINER clamy54
 ENV container docker
 ENV LANG C.UTF-8
 ENV TZ="America/New_York"
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TERM=xterm
 
-RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 openssl subversion libapache2-mod-svn php7.4-ldap php7.4-xml wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 openssl subversion libapache2-mod-svn php7.4-ldap php7.4-xml less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 RUN apt install -y python2 python3
 
@@ -13,6 +15,7 @@ RUN sed -i 's/^\s*ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-av
 RUN sed -i 's/^\s*SSLProtocol all -SSLv3/SSLProtocol all -TLSv1.1 -TLSv1 -SSLv2 -SSLv3/g' /etc/apache2/mods-available/ssl.conf 
 RUN sed -i 's/^\s*SSLCipherSuite HIGH:!aNULL/SSLCipherSuite ALL:+HIGH:!ADH:!EXP:!SSLv2:!SSLv3:!MEDIUM:!LOW:!NULL:!aNULL/g' /etc/apache2/mods-available/ssl.conf 
 RUN sed -i 's/^\s*#SSLHonorCipherOrder on/SSLHonorCipherOrder on/g' /etc/apache2/mods-available/ssl.conf 
+RUN sed -i 's/^\s*LoadModule dav_module \/usr\/lib\/apache2\/modules\/mod_dav\.so/<IfModule !mod_dav.c>\n  LoadModule dav_module \/usr\/lib\/apache2\/modules\/mod_dav\.so\n<\/IfModule>/g' /etc/apache2/mods-available/dav.load
 
 COPY files/dav_svn.conf  /etc/apache2/mods-available/dav_svn.conf
 
@@ -41,3 +44,4 @@ EXPOSE 80 443
 HEALTHCHECK --interval=1m --timeout=5s --retries=3 CMD ps aux | grep apache2 | grep www-data || exit 1
 
 ENTRYPOINT ["/container/entrypoint.sh"]
+
