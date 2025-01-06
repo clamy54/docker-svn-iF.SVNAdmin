@@ -142,7 +142,7 @@ if [ "$DEFAULT_PYTHON" == "2" ]
 then
     ln -s /usr/bin/python2.7 /usr/bin/python
 else
-    ln -s /usr/bin/python3.8 /usr/bin/python
+    ln -s /usr/bin/python3.12 /usr/bin/python
 fi
 
 echo "Starting apache2 ..."

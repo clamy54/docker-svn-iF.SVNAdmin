@@ -1,14 +1,24 @@
-FROM ubuntu/apache2:2.4-20.04_beta
+FROM ubuntu:24.04
 MAINTAINER clamy54
 ENV container docker
 ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
 ENV TZ="America/New_York"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm
 
-RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 openssl subversion libapache2-mod-svn php7.4-ldap php7.4-xml less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+RUN apt update && apt install -y software-properties-common wget build-essential checkinstall libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+RUN add-apt-repository -y ppa:ondrej/apache2 && add-apt-repository -y ppa:ondrej/php
+RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 php7.4-xml php7.4-curl php7.4-gd php7.4-mbstring php7.4-zip php7.4-intl php7.4-opcache php7.4-common php7.4-ldap openssl subversion libapache2-mod-svn less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y python2 python3
+RUN apt install -y python3
+
+
+RUN cd /usr/local/src && wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb && dpkg -i libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb && rm -f libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
+
+RUN cd /usr/local/src && wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb && dpkg -i libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb && rm -f libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb
+
+RUN cd /usr/local/src && wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && tar -zxf Python-2.7.18.tgz && cd /usr/local/src/Python-2.7.18/ && ./configure --exec-prefix=/usr --sysconfdir=/etc --prefix=/usr --enable-optimizations && make && make install && cd /usr/local/src && rm -rf Python-2.7.18 && rm -f Python-2.7.18.tgz 
 
 RUN sed -i 's/^\s*ServerTokens OS/ServerTokens Prod/g' /etc/apache2/conf-available/security.conf 
 RUN sed -i 's/^\s*ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf 
