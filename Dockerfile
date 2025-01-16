@@ -1,4 +1,4 @@
-FROM ubuntu:24.04
+FROM ubuntu:18.04
 MAINTAINER clamy54
 ENV container docker
 ENV LANG C.UTF-8
@@ -7,18 +7,10 @@ ENV TZ="America/New_York"
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm
 
-RUN apt update && apt install -y software-properties-common wget build-essential checkinstall libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
-RUN add-apt-repository -y ppa:ondrej/apache2 && add-apt-repository -y ppa:ondrej/php
-RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 php7.4-xml php7.4-curl php7.4-gd php7.4-mbstring php7.4-zip php7.4-intl php7.4-opcache php7.4-common php7.4-ldap openssl subversion libapache2-mod-svn less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+RUN apt update && apt install -y software-properties-common wget sed patch
+RUN apt update && apt install -y libapache2-mod-php7.2 php7.2 php7.2-xml php7.2-curl php7.2-gd php7.2-mbstring php7.2-zip php7.2-intl php7.2-opcache php7.2-common php7.2-ldap openssl subversion libapache2-mod-svn less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y python3
-
-
-RUN cd /usr/local/src && wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb && dpkg -i libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb && rm -f libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
-
-RUN cd /usr/local/src && wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb && dpkg -i libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb && rm -f libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb
-
-RUN cd /usr/local/src && wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && tar -zxf Python-2.7.18.tgz && cd /usr/local/src/Python-2.7.18/ && ./configure --exec-prefix=/usr --sysconfdir=/etc --prefix=/usr --enable-optimizations && make && make install && cd /usr/local/src && rm -rf Python-2.7.18 && rm -f Python-2.7.18.tgz 
+RUN apt install -y python3 python
 
 RUN sed -i 's/^\s*ServerTokens OS/ServerTokens Prod/g' /etc/apache2/conf-available/security.conf 
 RUN sed -i 's/^\s*ServerSignature On/ServerSignature Off/g' /etc/apache2/conf-available/security.conf 
@@ -42,6 +34,9 @@ RUN wget -O /var/www/html/stable-1.6.2.tar.gz https://github.com/mfreiholz/iF.SV
 COPY files/config.ini /var/www/html/data/config.ini
 
 COPY files/userroleassignments.ini /var/www/html/data/userroleassignments.ini
+COPY files/phpversion.patch /tmp
+
+RUN cd /var/www/html && patch -p0 < /tmp/phpversion.patch && rm -f /tmp/phpversion.patch
 
 RUN chown www-data:www-data /var/www/html/data/config.ini /var/www/html/data/userroleassignments.ini
 

@@ -1,0 +1,24 @@
+--- include/config.inc.php.orig 2025-01-16 04:33:00.696783605 -0500
++++ include/config.inc.php      2025-01-16 04:33:22.306596872 -0500
+@@ -22,10 +22,10 @@
+ set_exception_handler('exception_handler');
+ 
+ // Check PHP version.
+-if (!checkPHPVersion("5.3")) {
+-  echo "Wrong PHP version. The minimum required version is: 5.3";
+-  exit(1);
+-}
++//if (!checkPHPVersion("5.3")) {
++//  echo "Wrong PHP version. The minimum required version is: 5.3";
++//  exit(1);
++//}
+ 
+ // Does the config.ini file exists?
+ if (!file_exists("./data/config.ini"))
+@@ -369,4 +369,4 @@
+ }
+ 
+ $appTR->loadModule("global");
+-?>
+\ No newline at end of file
++?>
