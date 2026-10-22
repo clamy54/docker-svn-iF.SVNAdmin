@@ -6,10 +6,16 @@ This build is based on ubuntu 24.04 with php 7.4, mod ssl,  and iF.SVNAdmin 1.6.
 
 *This isn't an official build and it comes with no warranty  ...*
 
+## Security
+
+The `ubuntu2404` (and `latest`) image built on October 22, 2026 includes PHP 7.4.33-31, which fixes CVE-2026-109618 and CVE-2026-109619 (PHP2Shell). Users of older builds should pull the image again and recreate their container.
+
+**The `ubuntu2004` and `ubuntu1804` tags are deprecated and vulnerable** : their PHP versions no longer receive public security updates. Use `ubuntu2404` instead.
+
 ## How to run
 
 ```shell
-docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d clamy54/docker-svn-svnadmin:tag
+docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d clamy54/svn-svnadmin:ubuntu2404
 ```
 
 If /localdir/keys is empty, self-signed ssl certificate will be generated.

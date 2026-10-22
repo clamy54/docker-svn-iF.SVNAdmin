@@ -13,10 +13,17 @@ RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 php7.4-xml php7.4-
 
 RUN apt install -y python3
 
+# Hardening against CVE-2026-109619 (PHP2Shell), iF.SVNAdmin doesn't use upload progress
+RUN echo "session.upload_progress.enabled = 0" > /etc/php/7.4/apache2/conf.d/99-hardening.ini
 
-RUN cd /usr/local/src && wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb && dpkg -i libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb && rm -f libssl1.1_1.1.1f-1ubuntu2.23_amd64.deb
 
-RUN cd /usr/local/src && wget https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb && dpkg -i libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb && rm -f libssl-dev_1.1.1f-1ubuntu2.23_amd64.deb
+# Python 2.7 needs OpenSSL 1.1 : use the latest Ubuntu 20.04 revision, older ones are removed from the pool
+RUN cd /usr/local/src && POOL=https://security.ubuntu.com/ubuntu/pool/main/o/openssl \
+ && REV=$(wget -qO- $POOL/ | grep -oE 'libssl1\.1_1\.1\.1f-1ubuntu2\.[0-9]+_amd64\.deb' | sed -E 's/.*ubuntu2\.([0-9]+)_amd64\.deb/\1/' | sort -n | tail -1) \
+ && test -n "$REV" \
+ && wget $POOL/libssl1.1_1.1.1f-1ubuntu2.${REV}_amd64.deb $POOL/libssl-dev_1.1.1f-1ubuntu2.${REV}_amd64.deb \
+ && dpkg -i libssl1.1_1.1.1f-1ubuntu2.${REV}_amd64.deb libssl-dev_1.1.1f-1ubuntu2.${REV}_amd64.deb \
+ && rm -f libssl1.1_1.1.1f-1ubuntu2.${REV}_amd64.deb libssl-dev_1.1.1f-1ubuntu2.${REV}_amd64.deb
 
 RUN cd /usr/local/src && wget https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tgz && tar -zxf Python-2.7.18.tgz && cd /usr/local/src/Python-2.7.18/ && ./configure --exec-prefix=/usr --sysconfdir=/etc --prefix=/usr --enable-optimizations && make && make install && cd /usr/local/src && rm -rf Python-2.7.18 && rm -f Python-2.7.18.tgz 
 
