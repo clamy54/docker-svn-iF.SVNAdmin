@@ -8,13 +8,13 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV TERM=xterm
 
 RUN apt update && apt install -y software-properties-common wget build-essential checkinstall libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
-RUN add-apt-repository -y ppa:ondrej/apache2 && add-apt-repository -y ppa:ondrej/php
-RUN apt update && apt install -y libapache2-mod-php7.4 php7.4 php7.4-xml php7.4-curl php7.4-gd php7.4-mbstring php7.4-zip php7.4-intl php7.4-opcache php7.4-common php7.4-ldap openssl subversion libapache2-mod-svn less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+RUN add-apt-repository -y ppa:ondrej/apache2
+RUN apt update && apt install -y libapache2-mod-php8.3 php8.3 php8.3-xml php8.3-curl php8.3-gd php8.3-mbstring php8.3-zip php8.3-intl php8.3-opcache php8.3-common php8.3-ldap openssl subversion libapache2-mod-svn less vim wget tzdata && ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
 
 RUN apt install -y python3
 
 # Hardening against CVE-2026-109619 (PHP2Shell), iF.SVNAdmin doesn't use upload progress
-RUN echo "session.upload_progress.enabled = 0" > /etc/php/7.4/apache2/conf.d/99-hardening.ini
+RUN echo "session.upload_progress.enabled = 0" > /etc/php/8.3/apache2/conf.d/99-hardening.ini
 
 
 # Python 2.7 needs OpenSSL 1.1 : use the latest Ubuntu 20.04 revision, older ones are removed from the pool
@@ -44,7 +44,10 @@ COPY files/entrypoint.sh /container/entrypoint.sh
 
 RUN chmod 755 /container/entrypoint.sh 
 
-RUN wget -O /var/www/html/stable-1.6.2.tar.gz https://github.com/mfreiholz/iF.SVNAdmin/archive/refs/tags/stable-1.6.2.tar.gz && cd /var/www/html && rm -f index.html && tar zxf stable-1.6.2.tar.gz --strip 1 && rm -f stable-1.6.2.tar.gz .gitignore && chown -R www-data:www-data /var/www/html/ && chmod 777 /var/www/html/data
+# iF.SVNAdmin git master (no release since stable-1.6.2), pinned so that the patches below still apply
+ARG IFSVNADMIN_COMMIT=63d85ca06a0315592a52321dc0783ed5c33fc5df
+
+RUN wget -O /var/www/html/ifsvnadmin.tar.gz https://github.com/mfreiholz/iF.SVNAdmin/archive/${IFSVNADMIN_COMMIT}.tar.gz && cd /var/www/html && rm -f index.html && tar zxf ifsvnadmin.tar.gz --strip 1 && rm -f ifsvnadmin.tar.gz .gitignore .editorconfig && chown -R www-data:www-data /var/www/html/ && chmod 777 /var/www/html/data
 
 COPY files/CVE-2019-15128-csrf.patch /tmp
 

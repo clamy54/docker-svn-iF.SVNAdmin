@@ -2,13 +2,15 @@
 
 This container provides a fully fonctionnal subversion server with iF.SVNAdmin as web based GUI.
 
-This build is based on ubuntu 24.04 with php 7.4, mod ssl,  and iF.SVNAdmin 1.6.2 (svnadmin).
+This build is based on ubuntu 24.04 with php 8.3 (Ubuntu packages), mod ssl,  and iF.SVNAdmin git master (svnadmin).
+
+This is the `trunk` branch, published as the `clamy54/svn-svnadmin:trunk` image. iF.SVNAdmin has had no release since 1.6.2 (2013), but its git master contains later work : PHP 8 compatibility fixes, sub-groups, Active Directory support, better input validation and LDAP fixes. The master commit is pinned by the `IFSVNADMIN_COMMIT` build argument of the Dockerfile. For the 1.6.2 release, use the `ubuntu2404` image (`main` branch).
 
 *This isn't an official build and it comes with no warranty  ...*
 
 ## Security
 
-The `ubuntu2404` (and `latest`) image built on October 22, 2026 includes PHP 7.4.33-31, which fixes CVE-2026-109618 and CVE-2026-109619 (PHP2Shell). Users of older builds should pull the image again and recreate their container.
+The `ubuntu2404` (and `latest`) image built on October 22, 2026 includes PHP 7.4.33-31, which fixes CVE-2026-109618 and CVE-2026-109619 (PHP2Shell). The `trunk` image uses the PHP 8.3 packages of Ubuntu 24.04, fixed since version 8.3.6-0ubuntu0.24.04.13. Users of older builds should pull the image again and recreate their container.
 
 iF.SVNAdmin is no longer maintained upstream. `files/CVE-2019-15128-csrf.patch` adds an anti-CSRF token to every form and action of the web GUI (CVE-2019-15128). After upgrading, reload the web GUI pages that are already open.
 
@@ -17,7 +19,7 @@ iF.SVNAdmin is no longer maintained upstream. `files/CVE-2019-15128-csrf.patch` 
 ## How to run
 
 ```shell
-docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d clamy54/svn-svnadmin:ubuntu2404
+docker run --name svnserver  -p 8080:80 -p 8443:443  -v /localdir/svn:/var/svn/ -v /localdir/keys:/etc/apache2/keys/ -v /localdir/dav_svn:/etc/apache2/dav_svn/ -d clamy54/svn-svnadmin:trunk
 ```
 
 If /localdir/keys is empty, self-signed ssl certificate will be generated.
