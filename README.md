@@ -4,6 +4,8 @@ This container provides a fully fonctionnal subversion server with iF.SVNAdmin a
 
 This build is based on ubuntu 24.04 with php 7.4, mod ssl,  and iF.SVNAdmin 1.6.2 (svnadmin).
 
+The `trunk` image (`trunk` branch) embeds iF.SVNAdmin git master instead of the 1.6.2 release, with PHP 8.3 from Ubuntu 24.04 : `clamy54/svn-svnadmin:trunk`
+
 *This isn't an official build and it comes with no warranty  ...*
 
 ## Security
