@@ -46,6 +46,10 @@ RUN chmod 755 /container/entrypoint.sh
 
 RUN wget -O /var/www/html/stable-1.6.2.tar.gz https://github.com/mfreiholz/iF.SVNAdmin/archive/refs/tags/stable-1.6.2.tar.gz && cd /var/www/html && rm -f index.html && tar zxf stable-1.6.2.tar.gz --strip 1 && rm -f stable-1.6.2.tar.gz .gitignore && chown -R www-data:www-data /var/www/html/ && chmod 777 /var/www/html/data
 
+COPY files/CVE-2019-15128-csrf.patch /tmp
+
+RUN cd /var/www/html && patch -p0 < /tmp/CVE-2019-15128-csrf.patch && rm -f /tmp/CVE-2019-15128-csrf.patch && chown -R www-data:www-data /var/www/html/
+
 COPY files/config.ini /var/www/html/data/config.ini
 
 COPY files/userroleassignments.ini /var/www/html/data/userroleassignments.ini
